@@ -1,14 +1,12 @@
-const element = React.createElement
-
 class PlayerPanel extends React.Component {
     render() {
-        return ('div', null, element(PlayerBasics, null), element(PlayerDetails, null));
+        return ('div', null, element(PlayerBasics, {Name: "Daniel Vitelli"}));
     }
 }
 
 class PlayerBasics extends React.Component {
     render() {
-        return ('div', null, 'player basic information');
+        return ('div', null, h2(this.props.Name));
     }
 }
 
