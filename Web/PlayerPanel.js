@@ -1,6 +1,6 @@
 class PlayerPanel extends React.Component {
     render() {
-        return ('div', null, element(PlayerBasics, {Name: "Daniel Vitelli"}));
+        return ('div', null, element(PlayerBasics, {Name: "Daniel Vitelli"})); //, element(PlayerDetails, null));
     }
 }
 
