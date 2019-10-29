@@ -3,13 +3,12 @@ import csv
 
 DbName = "FantasyDraftHost.db"
 tables = {
-    "teams": "Teams"
+    "teams": "Teams",
+    "leagues": 'Leagues',
+    "players": "Players"
 }
 
-def buildTabes():
-    populateTeams()
-
-def populateSports(connection=None, shouldClose=False):
+def populateLeagues(connection=None, shouldClose=False):
     if connection is None:
         connection = sql.connect(DbName)
         shouldClose = True
@@ -65,6 +64,30 @@ def populateTeams(connection=None, shouldClose=False):
                                             {team[1]}
                                             {team[2]}
                                            )''')
+
+    cursor.commit()
+
+    if shouldClose:
+        connection.close()
+
+def buildPlayers(connection=None, shouldClose=False):
+    if connection is None:
+        connection = sql.connect(DbName)
+        shouldClose = True
+        
+    cursor = connection.cursor()
+
+    # Create Leagues table
+    cursor.execute('''CREATE TABLE Leagues(  
+                                            Id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                                            FirstName TEXT,
+                                            LastName TEXT,
+                                            TeamId INTEGER
+                                            FOREIGN KEY (TeamId) 
+                                                REFERENCES Teams (Id) 
+                                                    ON DELETE CASCADE 
+                                                    ON UPDATE NO ACTION,
+                                          )''')
 
     cursor.commit()
 
