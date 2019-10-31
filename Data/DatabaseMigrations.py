@@ -7,4 +7,4 @@ import sqlite3 as sql
 
 # build.buildPositions()
 # build.populatePositions()
-build.addPlayerPositions()
+# build.addPlayerPositions()

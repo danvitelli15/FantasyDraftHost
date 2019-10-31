@@ -1,7 +1,9 @@
 import sqlite3 as sql
 import csv as csv
 import Core.context as db
-import Core.player as Player
+import Core.Entities.player as PlayerEnt
+import Core.Repositories.TeamRepository as TeamRepo
+import Core.Repositories.PlayerRepository as PlayerRepo
 
 def importPlayers():
     playercsv = []
@@ -11,23 +13,28 @@ def importPlayers():
         for row in reader:
             playercsv.append(row)
 
+    playersToImport = []
+    for player in playercsv:
+        name = player[1].split()
+        playersToImport.append(PlayerEnt.Player(name[0], name[1], player[3], player[2], None))
+
     connection = sql.connect(db.DbName)
     cursor = connection.cursor()
 
-    playersToImport = Player.Player()
-
     for player in playersToImport:
-        if isNewRecord('Players', ['FirstName', 'LastName'], [player]):
-            None
+        #if isNewRecord('Players', ['FirstName', 'LastName'], [player]):
+        PlayerRepo.savePlayer(player)
+
 
 def isNewRecord(table, columns, values):
     connection = sql.connect(db.DbName)
-    cursor = connection.cursor
+    cursor = connection.cursor()
+
+    toReturn = True
 
     for x in range(0, len(columns)):
         cursor.execute('SELECT * FROM ? WHERE ? = ?', [table, columns[x], values[x]])
-
-    if cursor.fetchone() is None:
-        return True
+        if cursor.fetchone() is not None:
+            toReturn = False
     
-    return False
+    return toReturn
