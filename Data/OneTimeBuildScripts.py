@@ -24,7 +24,7 @@ def populateLeagues(connection=None, shouldClose=False):
     # Add seed data
     leagues = ['NFL', 'NBA', 'MLB']
     for league in leagues:
-        cursor.execute('''INSERT INTO Teams (Name) VALUES ({league})''')
+        cursor.execute('INSERT INTO Leagues (Name) VALUES (' + league + ')')
 
     cursor.commit()
 
@@ -37,8 +37,8 @@ def populateTeams(connection=None, shouldClose=False):
         shouldClose = True
 
     # Pull seed data into memory
-    teamsList = List()
-    with open('./SeedData/Teams.csv') as csvfile:
+    teamsList = []
+    with open('Data\SeedData\Teams.csv') as csvfile:
         reader = csv.reader(csvfile)
         for row in reader:
             teamsList.append(row)
@@ -49,23 +49,15 @@ def populateTeams(connection=None, shouldClose=False):
     cursor.execute('''CREATE TABLE Teams(   Id INTEGER PRIMARY KEY AUTOINCREMENT, 
                                             Name TEXT UNIQUE, 
                                             Abbreviation TEXT UNIQUE, 
-                                            Location TEXT
+                                            Location TEXT,
+                                            LeagueId INTEGER
                                         )''')
 
     # Add seed data
     for team in teamsList:
-        cursor.execute('''INSERT INTO Teams(
-                                            Name,
-                                            Abbreviation,
-                                            Location
-                                           )
-                                    VALUES (    
-                                            {team[0]}
-                                            {team[1]}
-                                            {team[2]}
-                                           )''')
+        cursor.execute('INSERT INTO Teams(Name, Abbreviation, Location, LeagueId) VALUES ("' + team[0] + '","' + team[1] + '","' + team[2] + '","' + str(1) + '")')
 
-    cursor.commit()
+    connection.commit()
 
     if shouldClose:
         connection.close()
@@ -78,18 +70,73 @@ def buildPlayers(connection=None, shouldClose=False):
     cursor = connection.cursor()
 
     # Create Leagues table
-    cursor.execute('''CREATE TABLE Leagues(  
+    cursor.execute('''CREATE TABLE Players(  
                                             Id INTEGER PRIMARY KEY AUTOINCREMENT, 
                                             FirstName TEXT,
                                             LastName TEXT,
-                                            TeamId INTEGER
+                                            TeamId INTEGER,
                                             FOREIGN KEY (TeamId) 
-                                                REFERENCES Teams (Id) 
-                                                    ON DELETE CASCADE 
-                                                    ON UPDATE NO ACTION,
+                                                REFERENCES Teams (Id)
                                           )''')
 
-    cursor.commit()
+    connection.commit()
+
+    if shouldClose:
+        connection.close()
+
+def buildPositions(connection=None, shouldClose=False):
+    if connection is None:
+        connection = sql.connect(DbName)
+        shouldClose = True
+    
+    cursor = connection.cursor()
+
+    # Create Leagues table
+    cursor.execute('''CREATE TABLE Positions(  
+                                              Id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                                              Name TEXT,
+                                              LeagueId INTEGER
+                                            )''')
+
+def populatePositions(connection=None, shouldClose=False):
+    if connection is None:
+        connection = sql.connect(DbName)
+        shouldClose = True
+    
+    PositionList = []
+    with open('Data\SeedData\Positions.csv') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            PositionList.append(row) 
+
+    cursor = connection.cursor()
+
+    for position in PositionList:
+        cursor.execute('SELECT Id FROM Leagues WHERE Name=?', [position[1].strip(' ')])
+        position.append(cursor.fetchone()[0])
+        
+    for position in PositionList:
+        cursor.execute('INSERT INTO Positions(Name, LeagueId) VALUES(?,?)', (position[0], position[2]))
+
+    connection.commit()
+
+    if shouldClose:
+        connection.close()
+
+def addPlayerPositions(connection=None, shouldClose=False):
+    if connection is None:
+        connection = sql.connect(DbName)
+        shouldClose = True
+
+    cursor = connection.cursor()
+
+    cursor.execute('''CREATE TABLE PlayerPositions(
+                                                    Id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                                                    PlayerId INTEGER, 
+                                                    PositionId INTEGER
+                                                  )''')
+
+    connection.commit()
 
     if shouldClose:
         connection.close()

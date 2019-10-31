@@ -1,13 +1,5 @@
 import sqlite3 as sql
-from Data import Context as db
-
-class Player:
-    def __init__(self, firstName, lastName, position, team, stats):
-        self.FirstName = firstName
-        self.LastName = lastName
-        self.Position = position
-        self.Team = team
-        self.Stats = stats
+import Core.context as db
 
 def getById(id):
     connection = sql.connect(db.DbName)
