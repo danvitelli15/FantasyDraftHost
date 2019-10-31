@@ -11,10 +11,13 @@ def importPlayers():
         for row in reader:
             playercsv.append(row)
 
+    playersToImport = []
+    for player in playercsv:
+        name = player[1].split()
+        playersToImport.append(Player(name[0], name[1], player[3], player[2], None))
+
     connection = sql.connect(db.DbName)
     cursor = connection.cursor()
-
-    playersToImport = Player.Player()
 
     for player in playersToImport:
         if isNewRecord('Players', ['FirstName', 'LastName'], [player]):

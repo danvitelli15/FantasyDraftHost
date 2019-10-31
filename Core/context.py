@@ -1,4 +1,4 @@
 DbName = "FantasyDraftHost.db"
 tables = {
-    "teams": "teams"
+    "teams": "Teams"
 }
