@@ -8,3 +8,5 @@ import Core.context as db
 
 #print(db.tableName('teams'))
 scripts.importPlayers()
+
+print(teams.getByName('Bears').Id)

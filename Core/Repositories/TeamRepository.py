@@ -8,6 +8,10 @@ def getByName(name):
     cursor = connection.cursor()
 
     cursor.execute('SELECT * FROM ? WHERE Name = ?', [db.tableName("teams"), name])
+    connection = sql.connect(db.DbName)
+    cursor = connection.cursor()
+
+    cursor.execute('SELECT * FROM Teams WHERE Name = ?', [name])
     teamRecord = cursor.fetchone()
 
     connection.close()
@@ -32,9 +36,10 @@ def saveTeam(team):
     connection = sql.connect(db.DbName)
     cursor = connection.cursor()
 
-    LeagueId = None
+    leagueId = None
 
     cursor.execute('INSERT INTO Teams (Name, Abbreviation, Location, LeagueId) VALUES (?, ?, ?, ?)', [team.Name, team.Abbreviation, team.Location, leagueId])
 
     connection.commit()
     connection.close
+    return team

@@ -22,8 +22,8 @@ def importPlayers():
     cursor = connection.cursor()
 
     for player in playersToImport:
-        #if isNewRecord('Players', ['FirstName', 'LastName'], [player]):
-        PlayerRepo.savePlayer(player)
+        if isNewRecord('Players', ['FirstName', 'LastName'], [player]):
+            PlayerRepo.savePlayer(player)
 
 
 def isNewRecord(table, columns, values):
